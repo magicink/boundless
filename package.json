@@ -1,0 +1,60 @@
+{
+  "name": "boundless",
+  "version": "0.0.1",
+  "private": true,
+  "description": "An experimental story format for Twine.",
+  "license": "MIT",
+  "author": {
+    "name": "Brandon Tom",
+    "email": "magicink@gmail.com"
+  },
+  "main": "dist/format.js",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "npm run build:webpack && npm run build:template",
+    "build:template": "node src/build.mjs",
+    "build:watch": "nodemon --watch src --exec \"npm run build:template\"",
+    "build:webpack": "webpack --mode production",
+    "clean": "rimraf ./dist",
+    "format": "sort-package-json && prettier --write \"**/*.{html,js,json,mjs}\"",
+    "prepare": "npm run build"
+  },
+  "prettier": "@brandontom/prettier",
+  "dependencies": {
+    "@babel/core": "^7.18.13",
+    "@babel/plugin-transform-runtime": "^7.18.10",
+    "@babel/preset-env": "^7.18.10",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/runtime": "^7.18.9",
+    "@brandontom/prettier": "^1.0.16",
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
+    "babel-loader": "^8.2.5",
+    "core-js": "^3.25.0",
+    "ejs": "^3.1.8",
+    "hast-util-from-dom": "^4.1.0",
+    "hastscript": "^7.0.2",
+    "immer": "^9.0.15",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rehype": "^12.0.1",
+    "rehype-react": "^7.1.1",
+    "rehype-stringify": "^9.0.3",
+    "remark-breaks": "^3.0.2",
+    "remark-directive": "^2.0.1",
+    "remark-gfm": "^3.0.1",
+    "remark-parse": "^10.0.1",
+    "remark-rehype": "^10.1.0",
+    "rimraf": "^3.0.2",
+    "sort-package-json": "^1.57.0",
+    "unified": "^10.1.2",
+    "unist-util-visit": "^4.1.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "zustand": "^4.1.1"
+  },
+  "devDependencies": {}
+}

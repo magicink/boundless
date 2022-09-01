@@ -1,0 +1,13 @@
+# IDE
+.idea
+.vscode
+
+# Dependencies
+node_modules/
+
+# Artifacts
+dist/
+
+# Error Logs
+yarn-error.log
+preview.html
