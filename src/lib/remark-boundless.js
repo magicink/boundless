@@ -15,11 +15,5 @@ export default function remarkBoundless() {
         siblings.splice(index, 1)
       }
     })
-    visit(ast, node => {
-      const {type} = node
-      if (type === 'containerScript') {
-        console.log(node)
-      }
-    })
   }
 }
