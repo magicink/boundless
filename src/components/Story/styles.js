@@ -68,7 +68,7 @@ export const GlobalStyles = css`
   }
 
   a,
-  .tw-link {
+  button {
     background-color: transparent;
     border-bottom: thin dashed;
     border-bottom-color: ${Orange[100]};

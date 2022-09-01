@@ -2,7 +2,12 @@
   "name": "boundless",
   "version": "0.0.1",
   "private": true,
-  "description": "An experimental story format for Twine.",
+  "description": "An experimental React-based story format for Twine.",
+  "keywords": [
+    "twine",
+    "story format",
+    "react"
+  ],
   "license": "MIT",
   "author": {
     "name": "Brandon Tom",

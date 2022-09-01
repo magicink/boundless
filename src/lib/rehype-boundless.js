@@ -74,5 +74,14 @@ export default function rehypeBoundless(options) {
         siblings.splice(index, 1, ...replacements)
       }
     })
+    visit(ast, 'element', (node, index, parent) => {
+      const { children: siblings = [], tagName: parentTag } = parent
+      const { children = [], tagName } = node
+      // find all p tags with a button parent
+      if (tagName === 'p' && parentTag === 'button') {
+        // remove the p tag
+        siblings.splice(index, 1, ...children)
+      }
+    })
   }
 }

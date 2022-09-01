@@ -4,8 +4,8 @@ import { extractStoryData, getPassageByName, getPassageByPid } from '../../utils
 import { fromDom } from 'hast-util-from-dom'
 import { Passage } from '../Passage'
 import React from 'react'
-import { useStory } from '../../hooks/useStory'
 import { useGame } from '../../hooks/useGame'
+import { useStory } from '../../hooks/useStory'
 
 export const Story = () => {
   const passage = useStory(state => state.passage)
@@ -16,22 +16,20 @@ export const Story = () => {
     window.Game = useGame
     window.Story = useStory
     const dataElement = document.querySelector('tw-storydata')
-    let passages = {}
     if (dataElement) {
       const storyHast = fromDom(dataElement)
       const story = extractStoryData(storyHast)
       const { data = {} } = story
-      passages = story.passages
       const { startnode } = data
       useStory.setState(story)
-      setPassage(getPassageByPid(startnode, passages))
+      setPassage(getPassageByPid(startnode))
     }
     const onPopState = () => {
       // get the passage name history
       const { state } = window.history
       const { passage = {} } = state
       const { name } = passage
-      setPassage(getPassageByName(name, passages))
+      setPassage(getPassageByName(name))
     }
     window.addEventListener('popstate', onPopState)
     return () => {
