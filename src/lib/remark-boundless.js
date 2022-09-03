@@ -24,7 +24,7 @@ export default function remarkBoundless() {
     })
 
     visit(ast, 'textDirective', node => {
-      const { attributes = {}, children = [], name } = node
+      const { attributes = {}, children = [], name = '' } = node
       if (name.toLowerCase() === 'state' && children.length) {
         const key = children[0].value
         // replace the node with a span
@@ -42,7 +42,7 @@ export default function remarkBoundless() {
       }
     })
     visit(ast, ['containerDirective', 'leafDirective'], node => {
-      const { attributes = {}, children = [], data = {}, name } = node
+      const { attributes = {}, children = [], data = {}, name = '' } = node
       if (!name.startsWith(' ') && !eventless.includes(name.toLowerCase())) {
         const hast = h(name, attributes, children)
         // get all data- attributes
