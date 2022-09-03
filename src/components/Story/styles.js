@@ -18,6 +18,11 @@ export const GlobalStyles = css`
     padding: 0;
   }
 
+  body {
+    background-color: ${Grey[400]};
+    color: #fff;
+  }
+
   h1,
   h2,
   h3,
@@ -56,6 +61,7 @@ export const GlobalStyles = css`
     font-size: 0.9rem;
     line-height: 1.5;
     margin: 0;
+    max-width: 100%;
     padding: 0.5rem;
   }
 
@@ -95,9 +101,7 @@ export const GlobalStyles = css`
   }
 `
 export const AppContainer = styled.main`
-  background-color: ${Grey[400]};
   bottom: 0;
-  color: #fff;
   position: absolute;
   top: 0;
   left: 0;

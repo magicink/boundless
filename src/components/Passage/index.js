@@ -11,10 +11,12 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import { useStory } from '../../hooks/useStory'
 import { Wrapper } from './styles'
+import { useApp } from '../../hooks/useApp'
 
 export const Passage = props => {
+  const { debug, updated, value } = props
+
   const [content, setContent] = React.useState(null)
-  const { value } = props
 
   const passages = useStory(state => state.passages)
   const setPassage = useStory(state => state.setPassage)
@@ -45,5 +47,12 @@ export const Passage = props => {
     process(value).then()
   }, [value])
 
-  return <Wrapper className={'tw-passage'}>{content}</Wrapper>
+  if (updated) return null
+
+  return (
+    <Wrapper className={'tw-passage'}>
+      {content}
+      {debug && <pre>{JSON.stringify(useApp.getState(), null, 2)}</pre>}
+    </Wrapper>
+  )
 }

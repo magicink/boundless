@@ -1,9 +1,44 @@
 import { useStory } from '../hooks/useStory'
 import { visit } from 'unist-util-visit'
+import { useApp } from '../hooks/useApp'
+import { fromDom } from 'hast-util-from-dom'
 
+/**
+ * returns the passage object for a given PID
+ * @param pid
+ * @returns {unknown}
+ */
 export const getPassageByPid = pid => Object.values(useStory.getState().passages).find(passage => passage.pid === pid)
+
+/**
+ * returns the passage object for a given name
+ * @param name
+ * @returns {unknown}
+ */
 export const getPassageByName = name =>
   Object.values(useStory.getState().passages).find(passage => passage.name === name)
+
+/**
+ * Shortcut for setting the current passage
+ * @param value
+ */
+export const setPassage = value => {
+  if (typeof value === 'string') {
+    const passage = getPassageByName(value)
+    if (passage) {
+      useStory.getState().setPassage(passage)
+    }
+  } else if (typeof value === 'object') {
+    const { name } = value
+    if (name) {
+      const passage = getPassageByName(value.name)
+      useStory.getState().setPassage(passage)
+    }
+  }
+}
+export const getState = key => {
+  return key ? useApp.getState()[key] : useApp.getState()
+}
 /**
  * Extract story data from parsed Twine hast
  * @returns {function(*): {}}
@@ -34,4 +69,17 @@ export const extractStoryData = ast => {
     }
   })
   return result
+}
+export const parseStoryElement = (dataElement, setDebug) => {
+  if (dataElement) {
+    const storyHast = fromDom(dataElement)
+    const story = extractStoryData(storyHast)
+    const { data = {} } = story
+    const { options = '' } = data
+    if (options.includes('debug')) setDebug(true)
+    const { startnode } = data
+    useStory.setState(story)
+    const passage = getPassageByPid(startnode)
+    setPassage(passage.name)
+  }
 }

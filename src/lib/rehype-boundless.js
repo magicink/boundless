@@ -7,7 +7,7 @@ import { visit } from 'unist-util-visit'
  * @returns {(function(*): void)|*}
  */
 export default function rehypeBoundless(options) {
-  const { classNames = ['tw-link'], onClick } = options
+  const { classNames = ['bdls-link'], onClick } = options
   return ast => {
     visit(ast, 'text', (node, index, parent) => {
       // noinspection JSMismatchedCollectionQueryUpdate
@@ -35,7 +35,7 @@ export default function rehypeBoundless(options) {
           linkData.destination = left
         }
 
-        const preLinkNode = {
+        const preNode = {
           type: 'text',
           value: preLink
         }
@@ -59,17 +59,17 @@ export default function rehypeBoundless(options) {
           type: 'element'
         }
 
-        const postLinkNode = {
+        const postNode = {
           type: 'text',
           value: postLink.join(']]')
         }
 
         const replacements = []
-        if (preLinkNode.value) {
-          replacements.push(preLinkNode)
+        if (preNode.value) {
+          replacements.push(preNode)
         }
         replacements.push(linkNode)
-        replacements.push(postLinkNode)
+        replacements.push(postNode)
 
         siblings.splice(index, 1, ...replacements)
       }

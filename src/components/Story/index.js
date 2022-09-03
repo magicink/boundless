@@ -1,41 +1,41 @@
 import { AppContainer, GlobalStyles } from './styles'
 import { css, Global } from '@emotion/react'
-import { extractStoryData, getPassageByName, getPassageByPid } from '../../utils'
-import { fromDom } from 'hast-util-from-dom'
+import { getState, parseStoryElement, setPassage } from '../../utils'
 import { Passage } from '../Passage'
 import React from 'react'
-import { useGame } from '../../hooks/useGame'
+import { useApp } from '../../hooks/useApp'
 import { useStory } from '../../hooks/useStory'
 
 export const Story = () => {
+  const [updated, setUpdated] = React.useState(false)
+  const [debug, setDebug] = React.useState(false)
+
   const passage = useStory(state => state.passage)
   const stylesheet = useStory(state => state.stylesheet)
-  const setPassage = useStory(state => state.setPassage)
+
+  const handleUpdate = () => {
+    setUpdated(!updated)
+  }
 
   React.useEffect(() => {
-    window.Game = useGame
+    if (updated) setUpdated(false)
+  }, [updated])
+
+  React.useEffect(() => {
+    window.App = useApp
     window.Story = useStory
+    window.setPassage = setPassage
+    window.getState = getState
+    const subscription = useApp.subscribe(handleUpdate)
     const dataElement = document.querySelector('tw-storydata')
-    if (dataElement) {
-      const storyHast = fromDom(dataElement)
-      const story = extractStoryData(storyHast)
-      const { data = {} } = story
-      const { startnode } = data
-      useStory.setState(story)
-      setPassage(getPassageByPid(startnode))
-    }
-    const onPopState = () => {
-      // get the passage name history
-      const { state } = window.history
-      const { passage = {} } = state
-      const { name } = passage
-      setPassage(getPassageByName(name))
-    }
-    window.addEventListener('popstate', onPopState)
+    parseStoryElement(dataElement, setDebug)
     return () => {
-      window.removeEventListener('popstate', onPopState)
+      subscription()
+      useApp.destroy()
+      useStory.destroy()
     }
   }, [])
+
   React.useEffect(() => {
     if (passage) {
       // check if the passage.name is in the history
@@ -46,6 +46,7 @@ export const Story = () => {
       history.replaceState({ passage }, null, `#${encodeURIComponent(passage.name)}`)
     }
   }, [passage])
+
   return (
     <>
       <Global styles={GlobalStyles} />
@@ -56,7 +57,9 @@ export const Story = () => {
           `
         }}
       />
-      <AppContainer className={'tw-story'}>{passage && <Passage {...passage} />}</AppContainer>
+      <AppContainer className={'tw-story'}>
+        {passage && <Passage {...passage} debug={debug} updated={updated} />}
+      </AppContainer>
     </>
   )
 }
