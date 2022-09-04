@@ -14,12 +14,15 @@ import { Wrapper } from './styles'
 import { useApp } from '../../hooks/useApp'
 
 export const Passage = props => {
-  const { debug, updated, value } = props
+  const { debug, value } = props
 
   const [content, setContent] = React.useState(null)
+  const [prevState, setPrevState] = React.useState(null)
+  const [updating, setUpdating] = React.useState(false)
 
   const passages = useStory(state => state.passages)
   const setPassage = useStory(state => state.setPassage)
+  const appState = useApp(state => state)
 
   const handleClick = passageName => {
     setPassage(getPassageByName(passageName, passages))
@@ -33,7 +36,7 @@ export const Passage = props => {
         .use(remarkDirective)
         .use(remarkBoundless)
         .use(remarkRehype, { allowDangerousHtml: true })
-        .use(rehypeBoundless, { classNames: ['tw-link'], onClick: handleClick })
+        .use(rehypeBoundless, { classNames: ['bdls-link'], onClick: handleClick })
         .use(rehypeStringify)
         .use(rehypeReact, { createElement, Fragment })
         .process(value)
@@ -44,10 +47,19 @@ export const Passage = props => {
   }
 
   React.useEffect(() => {
-    process(value).then()
-  }, [value])
+    const json = JSON.stringify(appState)
+    if (prevState !== json) {
+      setPrevState(json)
+      setUpdating(true)
+    }
+  }, [appState])
 
-  if (updated) return null
+  React.useEffect(() => {
+    process(value).then()
+    if (updating) {
+      setUpdating(false)
+    }
+  }, [updating, value])
 
   return (
     <Wrapper className={'tw-passage'}>

@@ -7,30 +7,16 @@ import { useApp } from '../../hooks/useApp'
 import { useStory } from '../../hooks/useStory'
 
 export const Story = () => {
-  const [updated, setUpdated] = React.useState(false)
   const [debug, setDebug] = React.useState(false)
 
   const passage = useStory(state => state.passage)
   const stylesheet = useStory(state => state.stylesheet)
 
-  const handleUpdate = () => {
-    setUpdated(!updated)
-  }
-
   React.useEffect(() => {
-    if (updated) setUpdated(false)
-  }, [updated])
-
-  React.useEffect(() => {
-    window.App = useApp
-    window.Story = useStory
-    window.setPassage = setPassage
-    window.getState = getState
-    const subscription = useApp.subscribe(handleUpdate)
+    Object.assign(window, { App: useApp, getState, setPassage, Story: useStory })
     const dataElement = document.querySelector('tw-storydata')
     parseStoryElement(dataElement, setDebug)
     return () => {
-      subscription()
       useApp.destroy()
       useStory.destroy()
     }
@@ -57,9 +43,7 @@ export const Story = () => {
           `
         }}
       />
-      <AppContainer className={'tw-story'}>
-        {passage && <Passage {...passage} debug={debug} updated={updated} />}
-      </AppContainer>
+      <AppContainer className={'tw-story'}>{passage && <Passage {...passage} debug={debug} />}</AppContainer>
     </>
   )
 }
