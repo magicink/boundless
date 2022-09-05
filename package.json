@@ -15,13 +15,12 @@
   },
   "main": "dist/format.js",
   "files": [
-    "dist/"
+    "dist/format.js"
   ],
   "scripts": {
     "prebuild": "npm run clean",
     "build": "npm run build:webpack && npm run build:template",
     "build:template": "node src/build.mjs",
-    "build:watch": "nodemon --watch src --exec \"npm run build:template\"",
     "build:webpack": "webpack --mode production",
     "clean": "rimraf ./dist",
     "format": "sort-package-json && prettier --write \"**/*.{html,js,json,mjs}\"",

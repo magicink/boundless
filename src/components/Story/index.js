@@ -1,6 +1,6 @@
 import { AppContainer, GlobalStyles } from './styles'
 import { css, Global } from '@emotion/react'
-import { getState, parseStoryElement, setPassage } from '../../utils'
+import { getState, initialize, setPassage } from '../../utils'
 import { Passage } from '../Passage'
 import React from 'react'
 import { useApp } from '../../hooks/useApp'
@@ -14,8 +14,8 @@ export const Story = () => {
 
   React.useEffect(() => {
     Object.assign(window, { App: useApp, getState, setPassage, Story: useStory })
-    const dataElement = document.querySelector('tw-storydata')
-    parseStoryElement(dataElement, setDebug)
+    const { debug } = initialize()
+    setDebug(debug)
     return () => {
       useApp.destroy()
       useStory.destroy()

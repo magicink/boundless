@@ -70,16 +70,25 @@ export const extractStoryData = ast => {
   })
   return result
 }
-export const parseStoryElement = (dataElement, setDebug) => {
+
+/**
+ * Initializes the story state
+ * @returns {{debug: boolean}}
+ */
+export const initialize = () => {
+  const dataElement = document.querySelector('tw-storydata')
   if (dataElement) {
     const storyHast = fromDom(dataElement)
     const story = extractStoryData(storyHast)
     const { data = {} } = story
     const { options = '' } = data
-    if (options.includes('debug')) setDebug(true)
     const { startnode } = data
     useStory.setState(story)
     const passage = getPassageByPid(startnode)
     setPassage(passage.name)
+    return {
+      debug: options.includes('debug')
+    }
   }
+  throw new Error('No story data found')
 }
