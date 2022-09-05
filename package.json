@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "description": "An experimental React-based story format for Twine.",
+  "homepage": "https://github.com/magicink/boundless",
   "keywords": [
     "twine",
     "story format",

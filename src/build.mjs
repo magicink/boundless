@@ -13,7 +13,7 @@ if (!fs.existsSync(targetPath)) {
   throw new Error('Target path does not exist')
 }
 
-const { author = {}, description, name, version } = packageJson
+const { author = {}, description, homepage, version } = packageJson
 
 try {
   const template = fs.readFileSync(path.join(__dirname, 'template.ejs'), 'utf-8')
@@ -22,8 +22,8 @@ try {
   const targetFile = path.join(targetPath, 'format.js')
   const data = {
     author: author.name,
-    description,
-    name,
+    description: `${description} See ${homepage} for more information.`,
+    name: "Boundless",
     proofing: false,
     source: source({
       sampleData: null,
