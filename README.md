@@ -5,15 +5,26 @@ it's an excuse to mess around with the Unified.
 
 ## Syntax
 
-### Links
+Boundless supports [GitHub Flavored Markdown](https://github.github.com/gfm/).
 
-Links are defined using the `[[` and `]]` syntax. Boundless supports the `->`,
-`<-`, and `|` link syntax.
+### Passage Links
 
-| Type                | Syntax                           | Example                           |
-|---------------------|----------------------------------|-----------------------------------|
-| Forward             | `[[link text->link target]]`     | `[[go to the store->store]]`      |
-| Backward            | `[[link target<-link text]]`     | `[[store<-go to the store]]`      |
-| Forward (shorthand) | `[[link text&#124;link target]]` | `[[go to the store &#124;store]]` |
+Passage links are defined using the `[[` and `]]` syntax. Boundless supports the
+following link formats:
 
-(**Note:** will be ignored in code blocks)
+| Syntax                           | Example                           |
+|----------------------------------|-----------------------------------|
+| `[[link target]]`                | `[[store]]`                       |
+| `[[link text->link target]]`     | `[[go to the store->store]]`      |
+| `[[link target<-link text]]`     | `[[store<-go to the store]]`      |
+| `[[link text&#124;link target]]` | `[[go to the store &#124;store]]` |
+
+### Markdown Directives
+
+Boundless supports Remark's implementation of Markdown directives
+(via `remark-directive`), which are used to add HTML elements not
+normally supported by Markdown.
+
+It should be noted that Markdown Directives have a very similar syntax
+to the Twee 2 syntax for setting passage tags. So far, this has
+not been an issue, but it may be in the future.
