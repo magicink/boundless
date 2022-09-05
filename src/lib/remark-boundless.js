@@ -1,25 +1,32 @@
+// noinspection JSMismatchedCollectionQueryUpdate
+
 import { h } from 'hastscript'
 import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
 const eventless = ['script', 'style', 'noscript', 'link', 'meta', 'if']
 
+const transformScriptNode = (node, index, parent) => {
+  const { children: siblings = [] } = parent
+  visit(node, 'paragraph', (child, index, parent = {}) => {
+    const { children: siblings = [], name: parentName } = parent
+    const { children = [] } = child
+    if (parentName === 'script') {
+      const values = children.map(child => child.value)
+      const script = values.join('')
+      eval(script)
+      siblings.splice(index, 1)
+    }
+  })
+  siblings.splice(index, 1)
+}
+
 export default function remarkBoundless() {
   return ast => {
-    visit(ast, 'containerDirective', node => {
+    visit(ast, 'containerDirective', (node, index, parent) => {
       const { name = '' } = node
       if (name.toLowerCase() === 'script') {
-        visit(node, 'paragraph', (child, index, parent = {}) => {
-          // noinspection JSMismatchedCollectionQueryUpdate
-          const { children: siblings = [], name: parentName } = parent
-          const { children = [] } = child
-          if (parentName === 'script') {
-            const values = children.map(child => child.value)
-            const script = values.join('')
-            eval(script)
-            siblings.splice(index, 1)
-          }
-        })
+        transformScriptNode(node, index, parent)
       }
     })
 
@@ -82,7 +89,8 @@ export default function remarkBoundless() {
         const { attributes = {}, children = [] } = node
         if (children.length > 1) {
           let evaluation
-          visit(node, 'paragraph', (child, index) => {
+          visit(node, 'paragraph', (child, index, parent) => {
+            const { children: siblings = [] } = parent
             if (index === 0) {
               const { children = [] } = child
               const { value } = children[0] || {}
@@ -97,11 +105,10 @@ export default function remarkBoundless() {
                 evaluation = window.eval.call(window, value)
               }
               // remove this node
-              children.splice(index, 1)
+              siblings.splice(index, 1)
             }
           })
           if (evaluation) {
-            // create div hast
             const hast = h('div', attributes, children)
             data.hName = hast.tagName
             data.hProperties = Object.assign({}, attributes, hast.properties)
