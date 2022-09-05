@@ -22,7 +22,7 @@ try {
   const targetFile = path.join(targetPath, 'format.js')
   const data = {
     author: author.name,
-    description: `${description} See ${homepage} for more information.`,
+    description: `${description} See <a href="${homepage}" target="_blank" rel="noopener">documentation</a> for more information.`,
     name: 'Boundless',
     proofing: false,
     source: source({
