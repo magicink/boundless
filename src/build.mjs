@@ -23,7 +23,7 @@ try {
   const data = {
     author: author.name,
     description: `${description} See ${homepage} for more information.`,
-    name: "Boundless",
+    name: 'Boundless',
     proofing: false,
     source: source({
       sampleData: null,
