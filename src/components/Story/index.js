@@ -22,17 +22,6 @@ export const Story = () => {
     }
   }, [])
 
-  React.useEffect(() => {
-    if (passage) {
-      // check if the passage.name is in the history
-      const { state } = window.history
-      if (state && state.passage && state.passage.name === passage.name) {
-        return
-      }
-      history.replaceState({ passage }, null, `#${encodeURIComponent(passage.name)}`)
-    }
-  }, [passage])
-
   return (
     <>
       <Global styles={GlobalStyles} />

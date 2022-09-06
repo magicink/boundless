@@ -25,7 +25,8 @@
     "build:webpack": "webpack --mode production",
     "clean": "rimraf ./dist",
     "format": "sort-package-json && prettier --write \"**/*.{html,js,json,mjs}\"",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "cross-env NODE_ENV=development jest"
   },
   "prettier": "@brandontom/prettier",
   "dependencies": {
@@ -65,5 +66,9 @@
     "webpack-cli": "4.10.0",
     "zustand": "4.1.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@brandontom/jest": "1.0.25",
+    "cross-env": "7.0.3",
+    "jest-environment-jsdom": "29.0.2"
+  }
 }
