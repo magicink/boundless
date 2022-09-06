@@ -85,10 +85,45 @@ export const initialize = () => {
     const { startnode } = data
     useStory.setState(story)
     const passage = getPassageByPid(startnode)
-    setPassage(passage.name)
+    useStory.getState().setPassage(passage)
     return {
       debug: options.includes('debug')
     }
   }
   throw new Error('No story data found')
+}
+
+/**
+ * Recursively parses the ::include directive
+ * @param value
+ * @param depth
+ * @returns {*}
+ */
+export const parseIncludes = (value, depth = 1) => {
+  let result = value
+  // find all matches in result /::include\[(.*)]/gm
+  const matches = result.match(/::include\[(.*)]/gm)
+  if (matches && matches.length) {
+    // for each match
+    matches.forEach(match => {
+      // find the passage name
+      const name = match.match(/::include\[(.*)]/)[1]
+      // get the passage
+      const passage = getPassageByName(name)
+      if (passage) {
+        // replace the match with the passage value
+        result = result.replace(`::include[${name}]`, `${passage.value}\n\n`)
+      } else {
+        console.warn(`Passage "${name}" not found`)
+        // replace the match with a blank string
+        result = result.replace(match, '')
+      }
+    })
+    // if depth is less than 20
+    if (depth < 20) {
+      // call parseImports again
+      result = parseIncludes(result, depth + 1)
+    }
+  }
+  return result
 }

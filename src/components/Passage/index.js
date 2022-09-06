@@ -1,5 +1,7 @@
+// noinspection JSCheckFunctionSignatures
+
 import React, { createElement, Fragment } from 'react'
-import { getPassageByName } from '../../utils'
+import { getPassageByName, parseIncludes } from '../../utils'
 import rehypeBoundless from '../../lib/rehype-boundless'
 import rehypeStringify from 'rehype-stringify'
 import rehypeReact from 'rehype-react'
@@ -30,6 +32,7 @@ export const Passage = props => {
 
   const process = async value => {
     try {
+      const importedResults = parseIncludes(value)
       const html = await unified()
         .use(remarkParse)
         .use(remarkGfm)
@@ -39,7 +42,7 @@ export const Passage = props => {
         .use(rehypeBoundless, { classNames: ['bdls-link'], onClick: handleClick })
         .use(rehypeStringify)
         .use(rehypeReact, { createElement, Fragment })
-        .process(value)
+        .process(importedResults)
       setContent(html.result)
     } catch (error) {
       console.error(error)
@@ -61,6 +64,7 @@ export const Passage = props => {
     }
   }, [updating, value])
 
+  // noinspection JSValidateTypes
   return (
     <Wrapper className={'tw-passage'}>
       {content}
