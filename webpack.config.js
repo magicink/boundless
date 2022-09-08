@@ -9,7 +9,7 @@ module.exports = {
   externalsType: 'window',
   output: {
     filename: '[name].js',
-    libraryTarget: 'commonjs2'
+    iife: true
   },
   mode: 'production',
   module: {

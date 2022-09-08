@@ -4,7 +4,10 @@ import { h } from 'hastscript'
 import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
-const eventless = ['script', 'style', 'noscript', 'link', 'meta', 'if']
+const boundlessTags = ['if', 'include']
+const ignoredTags = ['script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
+const textInputs = ['input', 'textarea']
+const simpleStringRegex = /^[a-zA-Z0-9_]+$/
 
 const transformScriptNode = (node, index, parent) => {
   const { children: siblings = [] } = parent
@@ -36,6 +39,12 @@ export default function remarkBoundless() {
         const key = children[0].value
         // replace the node with a span
         const hast = h('span', { ...attributes, className: 'bdls-state' })
+        let value
+        if (key.match(simpleStringRegex)) {
+          value = useApp.getState()[key] ?? ''
+        } else {
+          value = eval(key)
+        }
         node.data = {
           hName: hast.tagName,
           hProperties: hast.properties
@@ -43,44 +52,48 @@ export default function remarkBoundless() {
         node.children = [
           {
             type: 'text',
-            value: useApp.getState()[key]
+            value
           }
         ]
       }
     })
     visit(ast, ['containerDirective', 'leafDirective'], node => {
       const { attributes = {}, children = [], data = {}, name = '' } = node
-      if (!name.startsWith(' ') && !eventless.includes(name.toLowerCase())) {
+      let hasOnChangeEvent = false
+      if (!name.startsWith(' ') && !ignoredTags.includes(name.toLowerCase())) {
         const hast = h(name, attributes, children)
-        // get all data- attributes
-        const dataAttributes = Object.keys(attributes).reduce((acc, key) => {
-          if (key.startsWith('data-')) {
-            const keyName = key.replace('data-', '')
-            if (!keyName.trim()) return acc
-            if (key.startsWith('data-num-')) {
-              acc[key.replace('data-num-', '')] = Number(attributes[key])
-            } else if (key.startsWith('data-obj-')) {
-              try {
-                acc[key.replace('data-obj-', '')] = JSON.parse(attributes[key])
-              } catch (e) {
-                acc[key.replace('data-obj-', '')] = attributes[key]
-              }
-            } else {
-              acc[key.replace('data-', '')] = attributes[key]
-            }
-          }
-          return acc
-        }, {})
         const events = Object.keys(attributes).filter(key => key.startsWith('on'))
 
         events.forEach(event => {
           const eventName = event[2].toUpperCase() + event.slice(3)
+          if (eventName === 'Change') {
+            hasOnChangeEvent = true
+          }
           hast.properties[`on${eventName}`] = e => {
             e.preventDefault()
             e.stopPropagation()
-            window.eval.call(window, attributes[event])(dataAttributes)
+            window.eval.call(window, attributes[event])(e.target)
           }
         })
+
+        if (textInputs.includes(name.toLowerCase())) {
+          if (attributes['value']) {
+            const value = attributes['value']
+            if (value.startsWith(':state[') && value.endsWith(']')) {
+              const stateKey = value.slice(7, -1)
+              if (stateKey.match(simpleStringRegex)) {
+                hast.properties.value = useApp.getState()[stateKey] ?? ''
+              } else {
+                hast.properties.value = eval(stateKey)
+              }
+            }
+          }
+          if (!hasOnChangeEvent) {
+            hast.properties.readOnly = true
+          }
+          hast.properties = Object.assign(hast.properties)
+        }
+
         data.hName = hast.tagName
         data.hProperties = Object.assign({}, attributes, hast.properties)
         node.data = data
@@ -94,7 +107,7 @@ export default function remarkBoundless() {
             if (index === 0) {
               const { children = [] } = child
               const { value } = children[0] || {}
-              if (value && value.match(/^[a-zA-Z0-9_]+$/)) {
+              if (value && value.match(simpleStringRegex)) {
                 const state = useApp.getState()
                 const condition = state[value]
                 if (condition) {
