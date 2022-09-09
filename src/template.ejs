@@ -10,8 +10,12 @@
 <tw-story tags></tw-story>
     {{STORY_DATA}}
 <div id="story-root"></div>
-<script>
-    <%- script %>
-</script>
+<% if (!isDev) { %>
+    <script>
+        <%- script %>
+    </script>
+<% } else { %>
+  <script src="<%- script %>"></script>
+<% } %>
 </body>
 </html>
