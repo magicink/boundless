@@ -13,12 +13,12 @@ and a few additional features.
 Passage links are defined using the `[[` and `]]` syntax. Boundless supports the
 following link formats:
 
-| Syntax                       | Example                     |
-|------------------------------|-----------------------------|
-| `[[link target]]`            | `[[store]]`                 |
+| Syntax                       | Example                      |
+|------------------------------|------------------------------|
+| `[[link target]]`            | `[[store]]`                  |
 | `[[link text->link target]]` | `[[go to the store->store]]` |
 | `[[link target<-link text]]` | `[[store<-go to the store]]` |
-| `[[link text\|link target]]`| `[[go to the store\|store]]` |
+| `[[link text\|link target]]` | `[[go to the store\|store]]` |
 
 ### Markdown Directives
 

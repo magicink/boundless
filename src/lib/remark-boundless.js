@@ -6,7 +6,7 @@ import { visit } from 'unist-util-visit'
 
 const boundlessTags = ['if', 'include']
 const ignoredTags = ['script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
-const textInputs = ['input', 'textarea']
+const inputTags = ['input', 'textarea']
 const simpleStringRegex = /^[a-zA-Z0-9_]+$/
 
 const transformScriptNode = (node, index, parent) => {
@@ -22,6 +22,42 @@ const transformScriptNode = (node, index, parent) => {
     }
   })
   siblings.splice(index, 1)
+}
+
+const transformOptionNodes = selectNode => {
+  const { attributes: selectAttributes = {}, children = [] } = selectNode
+  const { name: selectName } = selectAttributes
+  children.forEach(child => {
+    const { attributes = {} } = child
+    const { value } = attributes
+    if (useApp.getState()[selectName] === value) {
+      attributes['selected'] = true
+    }
+  })
+}
+
+const transformIfNodes = node => {
+  let evaluation = false
+  visit(node, 'paragraph', (child, index, parent) => {
+    const { children: siblings = [] } = parent
+    if (index === 0) {
+      const { children = [] } = child
+      const { value } = children[0] || {}
+      if (value && value.match(simpleStringRegex)) {
+        const state = useApp.getState()
+        const condition = state[value]
+        if (condition) {
+          evaluation = true
+        }
+      } else {
+        // evaluate the value
+        evaluation = window.eval.call(window, value)
+      }
+      // remove this node
+      siblings.splice(index, 1)
+    }
+  })
+  return evaluation
 }
 
 export default function remarkBoundless() {
@@ -76,24 +112,29 @@ export default function remarkBoundless() {
           }
         })
 
-        if (textInputs.includes(name.toLowerCase())) {
-          if (attributes['value']) {
-            const value = attributes['value']
-            if (value.startsWith(':state[') && value.endsWith(']')) {
-              const stateKey = value.slice(7, -1)
-              if (stateKey.match(simpleStringRegex)) {
-                hast.properties.value = useApp.getState()[stateKey] ?? ''
-              } else {
-                hast.properties.value = eval(stateKey)
+        const isInput = inputTags.includes(name.toLowerCase())
+        const isSelect = name.toLowerCase() === 'select'
+
+        if (isInput) {
+          node.children = []
+          const { name = '', type, value } = attributes
+          switch (type) {
+            case 'checkbox':
+              hast.properties.checked = useApp.getState()[name] === true
+              break
+            case 'radio':
+              if (value) {
+                hast.properties.checked = useApp.getState()[name] === value
               }
-            }
-          }
-          if (!hasOnChangeEvent) {
-            hast.properties.readOnly = true
+              break
+            default:
+              hast.properties.value = useApp.getState()[name] ?? value
           }
           hast.properties = Object.assign(hast.properties)
         }
-
+        if (isSelect) {
+          transformOptionNodes(node)
+        }
         data.hName = hast.tagName
         data.hProperties = Object.assign({}, attributes, hast.properties)
         node.data = data
@@ -101,26 +142,7 @@ export default function remarkBoundless() {
       if (name === 'if') {
         const { attributes = {}, children = [] } = node
         if (children.length > 1) {
-          let evaluation
-          visit(node, 'paragraph', (child, index, parent) => {
-            const { children: siblings = [] } = parent
-            if (index === 0) {
-              const { children = [] } = child
-              const { value } = children[0] || {}
-              if (value && value.match(simpleStringRegex)) {
-                const state = useApp.getState()
-                const condition = state[value]
-                if (condition) {
-                  evaluation = true
-                }
-              } else {
-                // evaluate the value
-                evaluation = window.eval.call(window, value)
-              }
-              // remove this node
-              siblings.splice(index, 1)
-            }
-          })
+          let evaluation = transformIfNodes(node)
           if (evaluation) {
             const hast = h('div', attributes, children)
             data.hName = hast.tagName
