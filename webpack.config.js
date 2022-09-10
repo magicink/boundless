@@ -1,18 +1,32 @@
 const dotenv = require('dotenv')
+const webpack = require('webpack')
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin')
+
 dotenv.config()
 
 const { DEV_PORT = 9000, NODE_ENV = 'production' } = process.env
 
 const devConfigs = {}
+const plugins = [
+  new WebpackManifestPlugin({
+    publicPath: ''
+  })
+]
 if (NODE_ENV === 'development') {
   devConfigs.devServer = {
     devMiddleware: {
       index: true,
-      publicPath: '/'
+      publicPath: '/',
+      writeToDisk: true
     },
-    port: DEV_PORT
+    hot: true,
+    liveReload: true,
+    port: DEV_PORT,
+    watchFiles: ['src/**/*'],
+    webSocketServer: false
   }
   devConfigs.devtool = 'inline-source-map'
+  plugins.push(new webpack.HotModuleReplacementPlugin())
 }
 
 module.exports = {
@@ -43,5 +57,6 @@ module.exports = {
   },
   performance: {
     hints: false
-  }
+  },
+  plugins
 }

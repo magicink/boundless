@@ -1,7 +1,7 @@
 # Boundless
 
-Boundless is a React-based Story Format for Twine, but really
-it's an excuse to mess around with the Unified.
+Boundless is a React-based Story Format for [Twine](https://www.twinery.org), but really
+it's an excuse to mess around with the [Unified](https://unifiedjs.com).
 
 ## Syntax
 
