@@ -62,7 +62,7 @@ export const Passage = props => {
     if (updating) {
       setUpdating(false)
     }
-  }, [updating, value])
+  }, [updating])
 
   // noinspection JSValidateTypes
   return (
