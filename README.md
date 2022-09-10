@@ -86,6 +86,28 @@ console.log("Hello, world!")
 :::
 ```
 
+###### `:::if[condition]`
+
+The `:::if[condition]` container directive is used to conditionally render content. The
+content inside the directive will only be rendered if the condition is `true`.
+
+Using a single word as the condition will check if the variable exists in the Global `App`
+state. Therefore, the following two examples are equivalent:
+
+```
+:::if[key]
+This will be rendered assuming the `key` exists in the application state and is truthy.
+:::
+```
+
+Is equivalent to:
+
+```
+:::if[useApp.getState()['key']]
+This will be rendered assuming the `key` exists in the application state and is truthy.
+:::
+```
+
 ## Global API
 
 Boundless exposes two global objects: `App` and `Story`. These are accessible
