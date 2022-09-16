@@ -27,7 +27,8 @@
     "clean": "rimraf ./dist",
     "format": "sort-package-json && prettier --write \"**/*.{html,js,json,mjs}\"",
     "prepare": "yarn build",
-    "serve": "cross-env NODE_ENV=development yarn build:dev"
+    "serve": "cross-env NODE_ENV=development yarn build:dev",
+    "test": "cross-env NODE_ENV=development jest"
   },
   "prettier": "@brandontom/prettier",
   "dependencies": {
