@@ -5,7 +5,7 @@ import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
 const boundlessTags = ['if', 'include']
-const ignoredTags = ['script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
+const ignoredTags = ['head', 'html', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
 const inputTags = ['input', 'textarea', 'select']
 const simpleStringRegex = /^[a-zA-Z0-9_]+$/
 
