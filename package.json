@@ -1,6 +1,6 @@
 {
   "name": "boundless",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "description": "An experimental React-based story format for Twine.",
   "keywords": [
