@@ -4,7 +4,7 @@ import { h } from 'hastscript'
 import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
-const boundlessTags = ['if', 'include']
+const boundlessTags = ['if', 'include', 'state']
 const ignoredTags = ['head', 'html', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
 const inputTags = ['input', 'textarea', 'select']
 const simpleStringRegex = /^[a-zA-Z0-9_]+$/
@@ -97,37 +97,14 @@ export default function remarkBoundless() {
         transformScriptNode(node, index, parent)
       }
     })
-
-    visit(ast, 'textDirective', node => {
-      const { attributes = {}, children = [], name = '' } = node
-      parseAttributes(attributes)
-      if (name.toLowerCase() === 'state' && children.length) {
-        const key = children[0].value
-        // replace the node with a span
-        const hast = h('span', attributes)
-        let value
-        if (key.match(simpleStringRegex)) {
-          value = useApp.getState()[key] ?? ''
-        } else {
-          value = eval(key)
-        }
-        node.data = {
-          hName: hast.tagName,
-          hProperties: hast.properties
-        }
-        node.children = [
-          {
-            type: 'text',
-            value
-          }
-        ]
-      }
-    })
-    visit(ast, ['containerDirective', 'leafDirective'], node => {
+    
+    visit(ast, ['containerDirective', 'leafDirective', 'textDirective'], node => {
       const { attributes = {}, children = [], data = {}, name = '' } = node
+      const lowerCaseName = name.toLowerCase()
+      const nodeType = node.type
       parseAttributes(attributes)
       let hasOnChangeEvent = false
-      if (!name.startsWith(' ') && !ignoredTags.includes(name.toLowerCase())) {
+      if (!name.startsWith(' ') && !ignoredTags.includes(lowerCaseName)) {
         const hast = h(name, attributes, children)
         const events = Object.keys(attributes).filter(key => key.startsWith('on'))
 
@@ -143,8 +120,8 @@ export default function remarkBoundless() {
           }
         })
 
-        const isInput = inputTags.includes(name.toLowerCase())
-        const isSelect = name.toLowerCase() === 'select'
+        const isInput = inputTags.includes(lowerCaseName)
+        const isSelect = lowerCaseName === 'select'
 
         if (isInput) {
           const { name = '', type, value } = attributes
@@ -171,7 +148,7 @@ export default function remarkBoundless() {
         data.hProperties = Object.assign({}, attributes, hast.properties)
         node.data = data
       }
-      if (name === 'if' && node.type === 'containerDirective') {
+      if (lowerCaseName === 'if' && nodeType === 'containerDirective') {
         const { attributes = {}, children = [] } = node
         if (children.length > 1) {
           let evaluation = transformIfNodes(node)
@@ -186,6 +163,27 @@ export default function remarkBoundless() {
         } else {
           node.children = []
         }
+      }
+      if (lowerCaseName === 'state' && nodeType === 'textDirective' && children.length) {
+        const key = children[0].value
+        // replace the node with a span
+        const hast = h('span', attributes)
+        let value
+        if (key.match(simpleStringRegex)) {
+          value = useApp.getState()[key] ?? ''
+        } else {
+          value = eval(key)
+        }
+        node.data = {
+          hName: hast.tagName,
+          hProperties: hast.properties
+        }
+        node.children = [
+          {
+            type: 'text',
+            value
+          }
+        ]
       }
     })
   }
