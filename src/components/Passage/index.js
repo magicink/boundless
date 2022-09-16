@@ -38,7 +38,7 @@ export const Passage = props => {
         .use(remarkGfm)
         .use(remarkDirective)
         .use(remarkBoundless)
-        .use(remarkRehype)
+        .use(remarkRehype, { allowDangerousHtml: true })
         .use(rehypeBoundless, { classNames: ['bdls-link'], onClick: handleClick })
         .use(rehypeStringify)
         .use(rehypeReact, { createElement, Fragment })

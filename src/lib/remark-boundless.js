@@ -4,7 +4,7 @@ import { h } from 'hastscript'
 import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
-const boundlessTags = ['if', 'include', 'state']
+const boundlessTags = ['html', 'if', 'include', 'state']
 const ignoredTags = ['head', 'html', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
 const inputTags = ['input', 'textarea', 'select']
 const simpleStringRegex = /^[a-zA-Z0-9_]+$/
@@ -45,7 +45,7 @@ const handleCheckboxChange = name => () => {
   useApp.setState({ [name]: !checked })
 }
 
-const transformIfNodes = node => {
+const transformIfNode = node => {
   let evaluation = false
   visit(node, 'paragraph', (child, index, parent) => {
     const { children: siblings = [] } = parent
@@ -67,6 +67,20 @@ const transformIfNodes = node => {
     }
   })
   return evaluation
+}
+
+const transformHtmlNode = node => {
+  const { children = [] } = node
+  if (children.length) {
+    node.data = {
+      hName: 'div',
+      hProperties: {
+        dangerouslySetInnerHTML: {
+          __html: children[0].value
+        }
+      }
+    }
+  }
 }
 
 const parseAttributeState = value => {
@@ -97,7 +111,7 @@ export default function remarkBoundless() {
         transformScriptNode(node, index, parent)
       }
     })
-    
+
     visit(ast, ['containerDirective', 'leafDirective', 'textDirective'], node => {
       const { attributes = {}, children = [], data = {}, name = '' } = node
       const lowerCaseName = name.toLowerCase()
@@ -151,7 +165,7 @@ export default function remarkBoundless() {
       if (lowerCaseName === 'if' && nodeType === 'containerDirective') {
         const { attributes = {}, children = [] } = node
         if (children.length > 1) {
-          let evaluation = transformIfNodes(node)
+          let evaluation = transformIfNode(node)
           if (evaluation) {
             const hast = h('div', attributes, children)
             data.hName = hast.tagName
@@ -184,6 +198,9 @@ export default function remarkBoundless() {
             value
           }
         ]
+      }
+      if (lowerCaseName === 'html') {
+        transformHtmlNode(node)
       }
     })
   }
