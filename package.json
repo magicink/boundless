@@ -26,7 +26,7 @@
     "build:webpack": "webpack --mode production",
     "clean": "rimraf ./dist",
     "format": "sort-package-json && prettier --write \"**/*.{html,js,json,mjs}\"",
-    "prepare": "yarn build",
+    "prepare": "husky install && yarn build",
     "serve": "cross-env NODE_ENV=development yarn build:dev",
     "test": "cross-env NODE_ENV=development jest"
   },
