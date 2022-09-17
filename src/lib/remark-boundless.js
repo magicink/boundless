@@ -1,13 +1,14 @@
 // noinspection JSMismatchedCollectionQueryUpdate
 
 import { h } from 'hastscript'
+import { interpolateState } from '../utils'
 import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
 const boundlessTags = ['html', 'if', 'include', 'state']
 const ignoredTags = ['head', 'html', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
 const inputTags = ['input', 'textarea', 'select']
-const simpleStringRegex = /^[a-zA-Z0-9_]+$/
+const simpleStringRegex = /^!?[a-zA-Z0-9_]+$/
 
 const transformScriptNode = (node, index, parent) => {
   const { children: siblings = [] } = parent
@@ -53,11 +54,10 @@ const transformIfNode = node => {
       const { children = [] } = child
       const { value } = children[0] || {}
       if (value && value.match(simpleStringRegex)) {
+        const key = value.startsWith('!') ? value.substring(1) : value
         const state = useApp.getState()
-        const condition = state[value]
-        if (condition) {
-          evaluation = true
-        }
+        const condition = state[key]
+        evaluation = value.startsWith('!') ? !condition : condition
       } else {
         // evaluate the value
         evaluation = window.eval.call(window, value)
@@ -76,29 +76,17 @@ const transformHtmlNode = node => {
       hName: 'div',
       hProperties: {
         dangerouslySetInnerHTML: {
-          __html: children[0].value
+          __html: interpolateState(children[0]?.value ?? '')
         }
       }
     }
   }
 }
 
-const parseAttributeState = value => {
-  let result = value
-  const state = useApp.getState()
-  const matches = result.match(/:state\[(.*?)]/)
-  if (matches) {
-    const [match, key] = matches
-    result = result.replace(match, state[key])
-    result = parseAttributeState(result)
-  }
-  return result
-}
-
 const parseAttributes = (attributes = {}) => {
   Object.keys(attributes).forEach(key => {
     if (typeof attributes[key] === 'string') {
-      attributes[key] = parseAttributeState(attributes[key])
+      attributes[key] = interpolateState(attributes[key])
     }
   })
 }
@@ -184,7 +172,11 @@ export default function remarkBoundless() {
         const hast = h('span', attributes)
         let value
         if (key.match(simpleStringRegex)) {
-          value = useApp.getState()[key] ?? ''
+          if (key.startsWith('!')) {
+            value = !useApp.getState()[key.substring(1)]
+          } else {
+            value = useApp.getState()[key]
+          }
         } else {
           value = eval(key)
         }
