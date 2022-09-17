@@ -8,3 +8,6 @@ jobs:
       - name: install dependencies
         run: yarn install
         shell: bash
+      - name: test
+        run: yarn test
+        shell: bash
