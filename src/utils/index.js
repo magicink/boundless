@@ -36,9 +36,7 @@ export const setPassage = value => {
     }
   }
 }
-export const getState = key => {
-  return key ? useApp.getState()[key] : useApp.getState()
-}
+
 /**
  * Extract story data from parsed Twine hast
  * @returns {function(*): {}}
@@ -99,7 +97,7 @@ export const initialize = () => {
  * @param depth
  * @returns {*}
  */
-export const parseIncludes = (value, depth = 1) => {
+export const interpolateInclude = (value, depth = 1) => {
   let result = value
   // find all matches in result /::include\[(.*)]/gm
   const matches = result.match(/::include\[(.*)]/gm)
@@ -122,8 +120,26 @@ export const parseIncludes = (value, depth = 1) => {
     // if depth is less than 20
     if (depth < 20) {
       // call parseImports again
-      result = parseIncludes(result, depth + 1)
+      result = interpolateInclude(result, depth + 1)
     }
+  }
+  return result
+}
+
+/**
+ * Replaces the value for state directives nested within :state[] calls
+ * that cannot be reached by the parser.
+ * @param value
+ * @returns {*}
+ */
+export const interpolateState = value => {
+  let result = value
+  const state = useApp.getState()
+  const matches = result.match(/:state\[(.*?)]/)
+  if (matches) {
+    const [match, key] = matches
+    result = result.replace(match, state[key] ?? '')
+    result = interpolateState(result)
   }
   return result
 }

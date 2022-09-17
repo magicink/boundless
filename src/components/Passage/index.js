@@ -1,7 +1,7 @@
 // noinspection JSCheckFunctionSignatures
 
+import { getPassageByName, interpolateInclude } from '../../utils'
 import React, { createElement, Fragment } from 'react'
-import { getPassageByName, parseIncludes } from '../../utils'
 import rehypeBoundless from '../../lib/rehype-boundless'
 import rehypeStringify from 'rehype-stringify'
 import rehypeReact from 'rehype-react'
@@ -11,9 +11,9 @@ import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
+import { useApp } from '../../hooks/useApp'
 import { useStory } from '../../hooks/useStory'
 import { Wrapper } from './styles'
-import { useApp } from '../../hooks/useApp'
 
 export const Passage = props => {
   const { debug, value } = props
@@ -32,7 +32,7 @@ export const Passage = props => {
 
   const process = async value => {
     try {
-      const importedResults = parseIncludes(value)
+      const importedResults = interpolateInclude(value)
       const html = await unified()
         .use(remarkParse)
         .use(remarkGfm)
