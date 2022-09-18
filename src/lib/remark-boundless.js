@@ -187,7 +187,7 @@ export default function remarkBoundless() {
           }
         ]
       }
-      if (lowerCaseName === 'eval') {
+      if (lowerCaseName === 'eval' && nodeType === 'textDirective' && children.length) {
         const { children = [] } = node
         if (children.length) {
           const value = children[0].value
