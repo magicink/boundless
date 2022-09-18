@@ -6,7 +6,7 @@ import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
 const boundlessTags = ['html', 'if', 'include', 'state']
-const ignoredTags = ['head', 'html', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
+const ignoredTags = ['head', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
 const inputTags = ['input', 'textarea', 'select']
 const simpleStringRegex = /^!?[a-zA-Z0-9_]+$/
 
@@ -18,7 +18,7 @@ const transformScriptNode = (node, index, parent) => {
     if (parentName === 'script') {
       const values = children.map(child => child.value)
       const script = values.join('')
-      eval(script)
+      window.eval.call(window, script)
       siblings.splice(index, 1)
     }
   })
@@ -171,14 +171,10 @@ export default function remarkBoundless() {
         // replace the node with a span
         const hast = h('span', attributes)
         let value
-        if (key.match(simpleStringRegex)) {
-          if (key.startsWith('!')) {
-            value = !useApp.getState()[key.substring(1)]
-          } else {
-            value = useApp.getState()[key]
-          }
+        if (key.startsWith('!')) {
+          value = !useApp.getState()[key.substring(1)]
         } else {
-          value = eval(key)
+          value = useApp.getState()[key]
         }
         node.data = {
           hName: hast.tagName,
@@ -190,6 +186,23 @@ export default function remarkBoundless() {
             value
           }
         ]
+      }
+      if (lowerCaseName === 'eval') {
+        const { children = [] } = node
+        if (children.length) {
+          const value = children[0].value
+          const hast = h('span', attributes)
+          node.data = {
+            hName: hast.tagName,
+            hProperties: hast.properties
+          }
+          node.children = [
+            {
+              type: 'text',
+              value: window.eval.call(window, value)
+            }
+          ]
+        }
       }
       if (lowerCaseName === 'html') {
         transformHtmlNode(node)
