@@ -260,7 +260,7 @@ These are the items in the store:
 
 ## Application State (`window.App`)
 
-Boundless exposes a global `zustand` stores called `App`. It is accessible
+Boundless exposes a global `zustand` store called `App`. It is accessible
 from Story's JavaScript or via the `:::script` directive.
 
 ### API
