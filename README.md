@@ -26,7 +26,8 @@ Then click on `+ Add` Button and paste in the URL of the `format.js` file.
 
 ![Add Story Format](https://gdurl.com/od8V)
 
-If done correctly, the dialog should say `Boundless <version> will be added` and the
+If done correctly, the dialog should say `Boundless <version> will be added`.
+Finally, click the `Add` button.
 
 ## Syntax
 
