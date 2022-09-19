@@ -1,3 +1,5 @@
+![Placeholder](https://via.placeholder.com/88x31?text=Micro+Bar)
+
 # Boundless
 
 Boundless is a React-based Story Format for [Twine](https://www.twinery.org)
@@ -382,8 +384,9 @@ Will produce:
 </section>
 ```
 
-The `:state[key]` directive also works in `:::ejs` directives. However, using
-`App.get([key])` is recommended instead.
+The `:state[key]` directive also works within `:::ejs` directives. However, using
+`App.get([key])` is recommended instead because directives cannot be used in
+logic.
 
 ```
 :::script
