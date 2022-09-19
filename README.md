@@ -213,6 +213,40 @@ falsy.
 :::
 ```
 
+##### `:::ejs`
+
+The `:::ejs` container directive is used to render complex content using the EJS templating
+language.
+
+```ejs
+:::script
+App.set('name', 'Bob')
+App.set('numbers', [1, 2, 3])
+:::
+
+:::ejs
+  <p>Hello, <%= App.get('name') %>!</p>
+  <ul>
+    <% if (App.get().numbers.length > 0) { %>
+      <% App.get().numbers.forEach(function (number) { %>
+        <li><%= number %></li>
+      <% }) %>
+    <% } %>
+  </ul>
+:::
+```
+
+Will render as:
+
+```html
+<p>Hello, Bob!</p>
+<ul>
+  <li>1</li>
+  <li>2</li>
+  <li>3</li>
+</ul>
+```
+
 ##### `:::script`
 
 The `:::script` container directive is used to add JavaScript to the passage.
@@ -273,7 +307,7 @@ specified, the entire application state is returned.
 ##### Example
 
 ```js
-App.get('key') // => value
+App.get('key') // => value of `key`
 App.get() // => { key: value }
 ```
 
@@ -348,14 +382,15 @@ Will produce:
 </section>
 ```
 
-The `:state[key]` directive also works in `:::html` directives.
+The `:state[key]` directive also works in `:::ejs` directives. However, using
+`App.get([key])` is recommended instead.
 
 ```
 :::script
 App.set({test: "Hello World!"})
 :::
 
-:::html
+:::ejs
 <div>
   This is some <strong>HTML</strong> content.
   <p>Here is a state variable: :state[test]</p>

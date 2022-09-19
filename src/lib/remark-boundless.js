@@ -1,12 +1,13 @@
 // noinspection JSMismatchedCollectionQueryUpdate
 
+import ejs from 'ejs'
 import { h } from 'hastscript'
 import { interpolateState } from '../utils'
 import { useApp } from '../hooks/useApp'
 import { visit } from 'unist-util-visit'
 
-const boundlessTags = ['html', 'if', 'include', 'state']
-const ignoredTags = ['head', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
+const boundlessTags = ['ejs', 'if', 'include', 'state']
+const ignoredTags = ['head', 'html', 'script', 'style', 'noscript', 'link', 'meta', 'br'].concat(boundlessTags)
 const inputTags = ['input', 'textarea', 'select']
 const simpleStringRegex = /^!?[a-zA-Z0-9_]+$/
 
@@ -69,14 +70,14 @@ const transformIfNode = node => {
   return evaluation
 }
 
-const transformHtmlNode = node => {
+const transformEjsNode = node => {
   const { children = [] } = node
   if (children.length) {
     node.data = {
       hName: 'div',
       hProperties: {
         dangerouslySetInnerHTML: {
-          __html: interpolateState(children[0]?.value ?? '')
+          __html: interpolateState(ejs.render(children[0]?.value ?? '', useApp.getState()))
         }
       }
     }
@@ -204,8 +205,8 @@ export default function remarkBoundless() {
           ]
         }
       }
-      if (lowerCaseName === 'html') {
-        transformHtmlNode(node)
+      if (lowerCaseName === 'ejs') {
+        transformEjsNode(node)
       }
     })
   }
