@@ -1,5 +1,4 @@
 const dotenv = require('dotenv')
-const webpack = require('webpack')
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin')
 
 dotenv.config()
@@ -26,7 +25,6 @@ if (NODE_ENV === 'development') {
     webSocketServer: false
   }
   devConfigs.devtool = 'inline-source-map'
-  plugins.push(new webpack.HotModuleReplacementPlugin())
 }
 
 module.exports = {
@@ -35,6 +33,7 @@ module.exports = {
     scripts: './src/index.js'
   },
   externals: {
+    ejs: 'ejs',
     react: 'React',
     'react-dom': 'ReactDOM'
   },
