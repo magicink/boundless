@@ -95,8 +95,18 @@ Boundless supports Remark's implementation of Markdown directives
 (via [`remark-directive`](https://www.npmjs.com/package/remark-directive)),
 which are used to add HTML elements not normally supported by Markdown.
 
+Directives are only meant to supplement Markdown, not supersede it.
+When choosing between Markdown or Directives, it is recommended to use
+the Markdown syntax whenever possible. For instance, if you want to create
+a link, use `[link text](https://www.test.com)`
+instead of `:::a{href=https://www.test.com}`.
+
 Directives come in three flavors: container directives, leaf directives,
-and text directives. Container directives start with `:::tag` (where `tag` is
+and text directives.
+
+#### Container Directives
+
+Container directives start with `:::tag` (where `tag` is
 an HTML tag) and end with `:::`, both of which must appear
 on their own separate line. For example:
 
@@ -117,6 +127,8 @@ Will render as:
 **Note:** nesting leaf and text directives should work fine, but nesting container directives, while possible,
 is not predictable.
 
+#### Leaf Directives
+
 Leaf directives are similar to container directives, but they do not
 have a closing tag. For example:
 
@@ -131,6 +143,19 @@ Will render as:
 ```html
 <p>test<br>test</p>
 ```
+
+If a leaf directive contains text, you can place the content between two
+square brackets. For example, the text of an `option` would be written as:
+
+```
+:::select{name=selectExample required}
+::option[Red]{value=red}
+::option[White]{value=white}
+::option[Blue]{value=blue}
+:::
+```
+
+#### Text Directives
 
 Text directives are inline and can be used anywhere in a paragraph.
 The content affected by a text directive is indicated by the square
@@ -409,7 +434,7 @@ Will produce:
 </div>
 ```
 
-##### `:eval[statement]`
+#### `:eval[statement]`
 
 `:eval[statement]` is a text directive used to evaluate JavaScript statements.
 
@@ -423,8 +448,7 @@ Will produce:
 <p>The current time is 12:00:00 PM</p>
 ```
 
-If you need to display computations that are based on the application state,
-you can use the `:eval[statement]` directive.
+Another use is to display computations based on the application state:
 
 ```
 :::script
