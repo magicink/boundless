@@ -263,7 +263,7 @@ console.log("Hello, world!")
 :::
 ```
 
-##### `:::ejs`
+#### `:::ejs`
 
 The `:::ejs` container directive is used to render complex content using the EJS templating
 language.
