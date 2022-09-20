@@ -22,12 +22,27 @@ Then click on `Story Formats`
 
 ![Story Formats](https://gdurl.com/rq6Z)
 
-Then click on `+ Add` Button and paste in the URL of the `format.js` file.
+Then click on `+ Add` menu item and paste in the URL of the `format.js` file.
 
 ![Add Story Format](https://gdurl.com/od8V)
 
 If done correctly, the dialog should say `Boundless <version> will be added`.
-Finally, click the `Add` button.
+Next, click the `+ Add` button beneath the text field.
+
+### Setting the Story Format
+
+After you have installed Boundless you will need to specify the story format.
+Open the story you wish to use Boundless with and click on the `Story` menu.
+
+![Story Menu](https://gdurl.com/bNMx)
+
+Then click the `Details` tab. This will open a dialog in the bottom right corner
+of the screen.
+
+![Click the `Details` tab](https://gdurl.com/2NsO)
+
+In the dialog box use the `Story Format` dropdown to select the version of Boundless
+you want to use.
 
 ## Syntax
 
