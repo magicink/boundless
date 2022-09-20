@@ -61,6 +61,34 @@ following link formats:
 | `[[link target<-link text]]` | `[[store<-go to the store]]` |
 | `[[link text\|link target]]` | `[[go to the store\|store]]` |
 
+### Application State (`window.App`)
+
+Boundless exposes a global `zustand` store called `App`. It is attached
+to the `window` object and can be accessed anywhere in the application.
+
+#### API
+
+##### `App.get([key])`
+
+Returns the value of the specified key in the application state. If no key is
+specified, the entire application state is returned.
+
+```js
+App.get('key') // => value of `key`
+App.get() // => { key: value }
+```
+
+##### `App.set(key, [value])`
+
+Sets the value of the specified key in the application state. If no value is
+specified and the key is an object, the new state is merged with the existing
+state.
+
+```js
+App.set('key', 'value') // => { key: 'value' }
+App.set({ key: 'value2', key2: 'value2' }) // => { key: 'value2', key2: 'value2' }
+```
+
 ### Directives
 
 Boundless supports Remark's implementation of Markdown directives
@@ -173,12 +201,7 @@ Will produce:
 </section>
 ```
 
-#### Special Directives
-
-Boundless supports a few special directives that are not part of the `remark-directive`
-spec.
-
-##### `:::if[condition]`
+#### `:::if[condition]`
 
 The `:::if[condition]` container directive is used to conditionally render content. The
 content inside the directive will only be rendered if the condition is `true`.
@@ -228,6 +251,18 @@ falsy.
 :::
 ```
 
+#### `:::script`
+
+The `:::script` container directive is used to add JavaScript to the passage.
+The code is executed as soon as the passage loads (see "Application State" below for
+information on how to access application variables).
+
+```
+:::script
+console.log("Hello, world!")
+:::
+```
+
 ##### `:::ejs`
 
 The `:::ejs` container directive is used to render complex content using the EJS templating
@@ -262,19 +297,7 @@ Will render as:
 </ul>
 ```
 
-##### `:::script`
-
-The `:::script` container directive is used to add JavaScript to the passage.
-The code is executed as soon as the passage loads (see "Application State" below for
-information on how to access application variables).
-
-```
-:::script
-console.log("Hello, world!")
-:::
-```
-
-##### `::include[passageName]`
+#### `::include[passageName]`
 
 `::include[passageName]` is a leaf directive used to include other passages in the
 current passage. For example, let's say you have two passages: `welcome` and `store`.
@@ -307,44 +330,7 @@ These are the items in the store:
 ...
 ```
 
-## Application State (`window.App`)
-
-Boundless exposes a global `zustand` store called `App`. It is accessible
-from Story's JavaScript or via the `:::script` directive.
-
-### API
-
-#### `App.get([key])`
-
-Returns the value of the specified key in the application state. If no key is
-specified, the entire application state is returned.
-
-##### Example
-
-```js
-App.get('key') // => value of `key`
-App.get() // => { key: value }
-```
-
-#### `App.set(key, [value])`
-
-Sets the value of the specified key in the application state. If no value is
-specified and the key is an object, the new state is merged with the existing
-state.
-
-##### Example
-
-```js
-App.set('key', 'value') // => { key: 'value' }
-App.set({ key: 'value2', key2: 'value2' }) // => { key: 'value2', key2: 'value2' }
-```
-
-#### State and Directives
-
-Boundless supplies a few directives that can be used to access/manipulate
-application state.
-
-##### `:state[key]`
+#### `:state[key]`
 
 The `:state[key]` leaf directive is used to access the value of the specified key
 in the application state. It can be used anywhere in a passage.
