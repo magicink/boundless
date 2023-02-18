@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
-    "@brandontom/babel-preset": "1.0.27",
+    "@brandontom/babel-preset": "1.0.30-next.1",
     "@brandontom/jest": "1.0.27",
     "@brandontom/prettier": "1.0.27",
     "@testing-library/react": "13.4.0",
