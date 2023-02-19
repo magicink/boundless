@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
-    "@brandontom/babel-preset": "1.0.30-next.1",
+    "@brandontom/babel-preset": "2.0.0",
     "@brandontom/jest": "1.0.27",
     "@brandontom/prettier": "1.0.27",
     "@testing-library/react": "13.4.0",
@@ -69,6 +69,7 @@
     "prettier": "2.8.0",
     "rimraf": "3.0.2",
     "sort-package-json": "2.1.0",
+    "ts-loader": "^9.4.2",
     "webpack": "5.75.0",
     "webpack-cli": "5.0.0",
     "webpack-dev-server": "4.11.1",
